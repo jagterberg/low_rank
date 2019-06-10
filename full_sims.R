@@ -82,37 +82,55 @@ get_Y <- function(X = NULL,Q,Xsvd=NULL) {
 }
 
 
-n <- 5000
+n <- 10000
 eps <- .1
 kmax <- 200
 
 
+print("Simulating a good X matrix")
 X <- simulate_noise(n)
 Xsvd <- svd(X)
 l <- spectral_norm(Xsvd=Xsvd)
 beta = max(abs(X))/l
 r <- ceiling(log(n*(n-1))/(eps^2*beta^2))
 r <- min(n,r)
-Q <- generate_Q(n,r)
-k <- 1
-while(!is_approximation(X=X,Xsvd=Xsvd,Q=Q,eps=eps) && k < kmax) {
+j <- 1
+jmax <- 200
+while(r == n && j < jmax) {
   X <- simulate_noise(n)
   Xsvd <- svd(X)
   l <- spectral_norm(Xsvd=Xsvd)
   beta = max(abs(X))/l
   r <- ceiling(log(n*(n-1))/(eps^2*beta^2))
   r <- min(n,r)
+  j <- j+1
+  print(paste0("Trying new X for the ",j, "th time of ",jmax))
+  
+}
+
+print("Trying a Q matrix now...")
+Q <- generate_Q(n,r)
+k <- 1
+while(!is_approximation(X=X,Xsvd=Xsvd,Q=Q,eps=eps) && k < kmax) {
+  #X <- simulate_noise(n)
+  #Xsvd <- svd(X)
+  #l <- spectral_norm(Xsvd=Xsvd)
+  #beta = max(abs(X))/l
+  #r <- ceiling(log(n*(n-1))/(eps^2*beta^2))
+  #r <- min(n,r)
   Q <- generate_Q(n,r)
   
   print(paste0("k = ",k, " out of ", kmax))
   k <- k+1
 }
 
-if (k = kmax) {
+if (k == kmax) {
   final_val <- NULL
+  print("simulation unsuccessful")
 } else {
   final_val <- list(X,Q,r,eps)
   save(final_val,file=paste0("n",n,",r",r,",eps",eps,".RData"))
+  print("saved final_val")
 }
 
 
