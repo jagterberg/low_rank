@@ -82,9 +82,9 @@ get_Y <- function(X = NULL,Q,Xsvd=NULL) {
 }
 
 
-n <- 10000
+n <- 7500
 eps <- .1
-kmax <- 200
+kmax <- 500
 
 
 print("Simulating a good X matrix")
